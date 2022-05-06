@@ -13,7 +13,7 @@ class Lexer(private val input: String) {
             } else if (OPERATOR_CHARS.indexOf(current) != -1) {
                 tokenizeOperator()
             } else {
-                // whitespaces
+                // Белые места
                 next()
             }
         }

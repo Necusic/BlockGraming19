@@ -18,7 +18,7 @@ class Parser(private val tokens: List<Token>) {
     }
 
     private fun assignmentStatement(): Statement {
-        // WORD EQ
+        // Тут исчесления для "="
         val current = get(0)
         if (match(TokenType.WORD) && get(0).type === TokenType.EQ) {
             val variable = current.text

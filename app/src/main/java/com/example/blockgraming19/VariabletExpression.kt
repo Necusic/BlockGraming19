@@ -2,10 +2,10 @@ package com.example.blockgraming19
 
 import com.example.blockgraming19.Variables.isExists
 
-class VariabletExpression( val name: String) : Expression {
-    override fun eval(): Value?{
+class VariabletExpression(val name: String) : Expression {
+    override fun eval(): Value? {
         if (!isExists(name)) throw RuntimeException("Constant does not exists")
-        return  Variables[name]
+        return Variables[name]
     }
 
     override fun toString(): String {

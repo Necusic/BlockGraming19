@@ -1,12 +1,12 @@
 package com.example.blockgraming19
 
 enum class TokenType {
+    //Типы данных
     NUMBER, HEX_NUMBER, WORD, TEXT, BOOLEAN,
-    // keyword
+    // Ключевые слова
     PRINT,
     IF,
-    //operators
-    PLUS, MINUS, STAR, SLASH, EQ, EOF, LPAREN,  // (
+    //Операторы
+    PLUS, MINUS, STAR, SLASH, EQ, EOF, LPAREN,
     RPAREN
-    // )
 }
