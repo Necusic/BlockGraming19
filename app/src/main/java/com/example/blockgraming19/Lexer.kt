@@ -62,10 +62,11 @@ class Lexer(private val input: String) {
             current = next()
         }
         val word = buffer.toString()
-        if (word == "print") {
-            addToken(TokenType.PRINT)
-        } else {
-            addToken(TokenType.WORD, word)
+        when (word) {
+            "print" -> addToken(TokenType.PRINT)
+            "if" -> addToken(TokenType.IF)
+            "else" -> addToken(TokenType.ELSE)
+            else -> addToken(TokenType.WORD, word)
         }
     }
 
@@ -119,12 +120,12 @@ class Lexer(private val input: String) {
     }
 
     companion object {
-        private const val OPERATOR_CHARS = "+-*/()="
+        private const val OPERATOR_CHARS = "+-*/()=<>"
         private val OPERATOR_TOKENS = arrayOf(
             TokenType.PLUS, TokenType.MINUS,
             TokenType.STAR, TokenType.SLASH,
             TokenType.LPAREN, TokenType.RPAREN,
-            TokenType.EQ
+            TokenType.EQ,TokenType.LT,TokenType.GT
         )
 
         private fun isHexNumber(current: Char): Boolean {

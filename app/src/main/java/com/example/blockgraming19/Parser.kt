@@ -12,13 +12,14 @@ class Parser(private val tokens: List<Token>) {
     }
 
     private fun statement(): Statement {
-        return if (match(TokenType.PRINT)) {
-            PrintStatement(expression())
+        if (match(TokenType.PRINT)) {
+            return PrintStatement(expression())
+        }
+        return if (match(TokenType.IF)) {
+            ifElse()
         } else assignmentStatement()
     }
-
     private fun assignmentStatement(): Statement {
-        // Тут исчесления для "="
         val current = get(0)
         if (match(TokenType.WORD) && get(0).type === TokenType.EQ) {
             val variable = current.text
@@ -27,9 +28,40 @@ class Parser(private val tokens: List<Token>) {
         }
         throw RuntimeException("Unknown statement")
     }
+    private fun ifElse(): Statement {
+        val condition = expression()
+        val ifStatement = statement()
+        val elseStatement: Statement?
+        elseStatement = if (match(TokenType.ELSE)) {
+            statement()
+        } else {
+            null
+        }
+        return IfStatement(condition, ifStatement, elseStatement)
+    }
 
     private fun expression(): Expression {
-        return additive()
+        return conditional()
+    }
+    private  fun conditional():Expression{
+        var result = additive()
+        while (true) {
+            if (match(TokenType.EQ)) {
+                result = ConditionalExpression('=', result, additive())
+                continue
+            }
+            if (match(TokenType.LT)) {
+                result = ConditionalExpression('<', result, additive())
+                continue
+            }
+            if (match(TokenType.GT)) {
+                result = ConditionalExpression('>', result, additive())
+                continue
+            }
+            break
+        }
+        return result
+
     }
 
     private fun additive(): Expression {
@@ -117,7 +149,7 @@ class Parser(private val tokens: List<Token>) {
     }
 
     companion object {
-        private val EOF = Token(TokenType.EOF, "")
+        val EOF = Token(TokenType.EOF, "")
     }
 
     init {

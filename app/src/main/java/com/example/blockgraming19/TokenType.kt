@@ -6,7 +6,8 @@ enum class TokenType {
     // Ключевые слова
     PRINT,
     IF,
+    ELSE,
     //Операторы
-    PLUS, MINUS, STAR, SLASH, EQ, EOF, LPAREN,
+    PLUS, MINUS, STAR, SLASH, EQ, EOF,LT,GT, LPAREN,
     RPAREN
 }

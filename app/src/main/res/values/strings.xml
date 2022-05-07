@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">BlockGraming 19</string>
+    <string name="Button_name">result</string>
+    <string name="Block_Graming">Block Graming</string>
+    <string name="hint">Input</string>
 </resources>
