@@ -1,14 +1,16 @@
 package com.example.blockgraming19
 
 import com.example.blockgraming19.NumberValue
+import java.security.PrivateKey
 
 class ConditionalExpression(
     final val operation: Operator,
     private val expr1: Expression,
-    private val expr2: Expression
+    private val expr2: Expression,
+
 ) : Expression {
     //Тут может быть проблема !(ФАТАЛЬНАЯ)
-     enum  class Operator(  name: String) {
+     enum  class Operator(name:String) {
         PLUS("+"), MINUS("-"), MULTIPLY("*"), DIVIDE("/"), EQUALS("=="), NOT_EQUALS("!="), LT("<"), LTEQ(
             "<="
         ),
