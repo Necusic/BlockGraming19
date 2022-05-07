@@ -7,6 +7,8 @@ enum class TokenType {
     PRINT,
     IF,
     ELSE,
+    WHILE,
+    FOR,
     //Операторы
     PLUS, MINUS, STAR, SLASH, EQ,EQEQ,EXCL,EXCLEQ,
     EOF,LT,LTEQ,GT,GTEQ,
@@ -17,5 +19,9 @@ enum class TokenType {
     AMPAMP,
     //Cкобки
     LPAREN,
-    RPAREN
+    RPAREN,
+    LBRACE,
+    RBRACE,
+    COMMA,
+    EQF
 }

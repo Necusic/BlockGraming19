@@ -1,8 +1,8 @@
 package com.example.blockgraming19
 
-internal class Lexer(private val input: String) {
+class Lexer(private val input: String) {
     companion object {
-        private const val OPERATOR_CHARS = "+-*/()=<>!&|"
+        private const val OPERATOR_CHARS = "+-*/(){}=<>!&|,"
         private val OPERATORS = mutableMapOf<String,TokenType>(
             "+" to TokenType.PLUS,
             "-" to TokenType.MINUS,
@@ -10,6 +10,8 @@ internal class Lexer(private val input: String) {
             "/" to TokenType.SLASH,
             "(" to TokenType.LPAREN,
             ")" to TokenType.RPAREN,
+            "{" to TokenType.LBRACE,
+            "}" to TokenType.RBRACE,
             "=" to TokenType.EQ,
             "<" to TokenType.LT,
             ">" to TokenType.GT,
@@ -22,10 +24,12 @@ internal class Lexer(private val input: String) {
             ">=" to TokenType.GTEQ,
             "&&" to TokenType.AMPAMP,
             "||" to TokenType.BARBAR,
+            "," to TokenType.COMMA,
         )
         private fun isHexNumber(current: Char): Boolean {
             return "abcdef".indexOf(Character.toLowerCase(current)) != -1
         }
+
 
     }
 
@@ -115,6 +119,8 @@ internal class Lexer(private val input: String) {
             "print" -> addToken(TokenType.PRINT)
             "if" -> addToken(TokenType.IF)
             "else" -> addToken(TokenType.ELSE)
+            "while" -> addToken(TokenType.WHILE)
+            "for" -> addToken(TokenType.FOR)
             else -> addToken(TokenType.WORD, word)
         }
     }

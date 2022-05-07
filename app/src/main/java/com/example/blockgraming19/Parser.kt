@@ -1,22 +1,43 @@
 package com.example.blockgraming19
 
+import java.lang.RuntimeException
+
 class Parser(private val tokens: List<Token>) {
     private val size: Int
     private var pos = 0
-    fun parse(): List<Statement> {
-        val result: MutableList<Statement> = ArrayList()
+    fun parse(): Statement {
+        val result = BlockStatement()
         while (!match(TokenType.EOF)) {
             result.add(statement())
         }
         return result
     }
 
+    private fun block(): Statement {
+        val block = BlockStatement()
+        consume(TokenType.LBRACE)
+        while (!match(TokenType.RBRACE)) {
+            block.add(statement())
+        }
+        return block
+    }
+
+    private fun statementOrBlock(): Statement {
+        return if (get(0).type === TokenType.LBRACE) block() else statement()
+    }
+
     private fun statement(): Statement {
         if (match(TokenType.PRINT)) {
             return PrintStatement(expression())
         }
-        return if (match(TokenType.IF)) {
-            ifElse()
+        if (match(TokenType.IF)) {
+            return ifElse()
+        }
+        if (match(TokenType.WHILE)) {
+            return whileStatement()
+        }
+        return if (match(TokenType.FOR)) {
+            forStatement()
         } else assignmentStatement()
     }
 
@@ -33,14 +54,30 @@ class Parser(private val tokens: List<Token>) {
 
     private fun ifElse(): Statement {
         val condition = expression()
-        val ifStatement = statement()
+        val ifStatement = statementOrBlock()
         val elseStatement: Statement?
         elseStatement = if (match(TokenType.ELSE)) {
-            statement()
+            statementOrBlock()
         } else {
             null
         }
         return IfStatement(condition, ifStatement, elseStatement)
+    }
+
+    private fun whileStatement(): Statement {
+        val condition = expression()
+        val statement = statementOrBlock()
+        return WhileStatement(condition, statement)
+    }
+
+    private fun forStatement(): Statement {
+        val initialization = assignmentStatement()
+        consume(TokenType.COMMA)
+        val termination = expression()
+        consume(TokenType.COMMA)
+        val increment = assignmentStatement()
+        val statement = statementOrBlock()
+        return ForStatement(initialization, termination, increment, statement)
     }
 
     private fun expression(): Expression {
@@ -138,7 +175,7 @@ class Parser(private val tokens: List<Token>) {
     private fun multiplicative(): Expression {
         var result = unary()
         while (true) {
-            // 2 * 6 / 3
+            // 2 * 6 / 3 
             if (match(TokenType.STAR)) {
                 result = BinaryExpression('*', result, unary())
                 continue
@@ -167,11 +204,10 @@ class Parser(private val tokens: List<Token>) {
             return ValueExpression(current.text!!.toDouble())
         }
         if (match(TokenType.HEX_NUMBER)) {
-            //Тут может быть проблема !
             return ValueExpression(current.text!!.toDouble())
         }
         if (match(TokenType.WORD)) {
-            return VariabletExpression(current.text!!)
+            return VariableExpression(current.text!!)
         }
         if (match(TokenType.TEXT)) {
             return ValueExpression(current.text)

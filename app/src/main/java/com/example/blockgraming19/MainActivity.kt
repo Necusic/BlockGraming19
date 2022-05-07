@@ -24,13 +24,19 @@ class MainActivity : AppCompatActivity() {
         input1 = findViewById(R.id.input1)
         resButton = findViewById(R.id.Result)
 
-        resButton?.setOnClickListener {
-            val num1:String = input1?.text.toString()
-            val tokens = Lexer(num1).tokenize()
-            val statements = Parser(tokens).parse()
-            rusult?.setText(statements.toString())
-
-        }
+//        resButton?.setOnClickListener {
+//            val num1:String = input1?.text.toString()
+//            val tokens = Lexer(num1).tokenize()
+//            val statements = Parser(tokens).parse()
+//            val a = mutableListOf<String>()
+//            for (i in statements){
+//                i.execute()
+//                a.add(i.toString())
+//
+//            }
+//            rusult?.setText(a.toString())
+//
+//        }
 
     }
 
