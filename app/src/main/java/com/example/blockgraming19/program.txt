@@ -1,2 +1,2 @@
-
-if 1 < 2 print "Ok"
+a = 2
+if a != 3 print "OK"

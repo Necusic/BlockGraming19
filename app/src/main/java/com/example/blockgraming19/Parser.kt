@@ -19,7 +19,9 @@ class Parser(private val tokens: List<Token>) {
             ifElse()
         } else assignmentStatement()
     }
+
     private fun assignmentStatement(): Statement {
+        // WORD EQ
         val current = get(0)
         if (match(TokenType.WORD) && get(0).type === TokenType.EQ) {
             val variable = current.text
@@ -28,6 +30,7 @@ class Parser(private val tokens: List<Token>) {
         }
         throw RuntimeException("Unknown statement")
     }
+
     private fun ifElse(): Statement {
         val condition = expression()
         val ifStatement = statement()
@@ -41,27 +44,79 @@ class Parser(private val tokens: List<Token>) {
     }
 
     private fun expression(): Expression {
-        return conditional()
+        return logicalOr()
     }
-    private  fun conditional():Expression{
-        var result = additive()
+
+    private fun logicalOr(): Expression {
+        var result = logicalAnd()
         while (true) {
-            if (match(TokenType.EQ)) {
-                result = ConditionalExpression('=', result, additive())
-                continue
-            }
-            if (match(TokenType.LT)) {
-                result = ConditionalExpression('<', result, additive())
-                continue
-            }
-            if (match(TokenType.GT)) {
-                result = ConditionalExpression('>', result, additive())
+            if (match(TokenType.BARBAR)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.OR, result, logicalAnd())
                 continue
             }
             break
         }
         return result
+    }
 
+    private fun logicalAnd(): Expression {
+        var result = equality()
+        while (true) {
+            if (match(TokenType.AMPAMP)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.AND, result, equality())
+                continue
+            }
+            break
+        }
+        return result
+    }
+
+    private fun equality(): Expression {
+        val result = conditional()
+        if (match(TokenType.EQEQ)) {
+            return ConditionalExpression(
+                ConditionalExpression.Operator.EQUALS,
+                result,
+                conditional()
+            )
+        }
+        return if (match(TokenType.EXCLEQ)) {
+            ConditionalExpression(
+                ConditionalExpression.Operator.NOT_EQUALS,
+                result,
+                conditional()
+            )
+        } else result
+    }
+
+    private fun conditional(): Expression {
+        var result = additive()
+        while (true) {
+            if (match(TokenType.LT)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.LT, result, additive())
+                continue
+            }
+            if (match(TokenType.LTEQ)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.LTEQ, result, additive())
+                continue
+            }
+            if (match(TokenType.GT)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.GT, result, additive())
+                continue
+            }
+            if (match(TokenType.GTEQ)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.GTEQ, result, additive())
+                continue
+            }
+            break
+        }
+        return result
     }
 
     private fun additive(): Expression {
@@ -111,9 +166,9 @@ class Parser(private val tokens: List<Token>) {
         if (match(TokenType.NUMBER)) {
             return ValueExpression(current.text!!.toDouble())
         }
-        //Тут может быть проблема
         if (match(TokenType.HEX_NUMBER)) {
-            return ValueExpression(current.text!!.toLong(16).toDouble())
+            //Тут может быть проблема !
+            return ValueExpression(current.text!!.toDouble())
         }
         if (match(TokenType.WORD)) {
             return VariabletExpression(current.text!!)
@@ -149,7 +204,7 @@ class Parser(private val tokens: List<Token>) {
     }
 
     companion object {
-        val EOF = Token(TokenType.EOF, "")
+        private val EOF = Token(TokenType.EOF, "")
     }
 
     init {
