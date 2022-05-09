@@ -3,4 +3,8 @@
     <string name="Button_name">result</string>
     <string name="Block_Graming">Block Graming</string>
     <string name="hint">Input</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>
