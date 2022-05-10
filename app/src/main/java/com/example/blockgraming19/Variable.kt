@@ -2,7 +2,7 @@ package com.example.blockgraming19
 
 internal object Variables {
     private val ZERO = NumberValue(0.0)
-    val variables= mutableMapOf<String,Value>(
+    val variables = mutableMapOf<String,Value>(
         "PI" to NumberValue(Math.PI),
         "E" to NumberValue(Math.E),
     )

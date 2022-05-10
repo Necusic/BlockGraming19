@@ -1,25 +1,48 @@
 package com.example.blockgraming19
 
+import java.lang.RuntimeException
+
 class Parser(private val tokens: List<Token>) {
     private val size: Int
     private var pos = 0
-    fun parse(): List<Statement> {
-        val result: MutableList<Statement> = ArrayList()
+    fun parse(): Statement {
+        val result = BlockStatement()
         while (!match(TokenType.EOF)) {
             result.add(statement())
         }
         return result
     }
 
+    private fun block(): Statement {
+        val block = BlockStatement()
+        consume(TokenType.LBRACE)
+        while (!match(TokenType.RBRACE)) {
+            block.add(statement())
+        }
+        return block
+    }
+
+    private fun statementOrBlock(): Statement {
+        return if (get(0).type === TokenType.LBRACE) block() else statement()
+    }
+
     private fun statement(): Statement {
         if (match(TokenType.PRINT)) {
             return PrintStatement(expression())
         }
-        return if (match(TokenType.IF)) {
-            ifElse()
+        if (match(TokenType.IF)) {
+            return ifElse()
+        }
+        if (match(TokenType.WHILE)) {
+            return whileStatement()
+        }
+        return if (match(TokenType.FOR)) {
+            forStatement()
         } else assignmentStatement()
     }
+
     private fun assignmentStatement(): Statement {
+        // WORD EQ
         val current = get(0)
         if (match(TokenType.WORD) && get(0).type === TokenType.EQ) {
             val variable = current.text
@@ -28,40 +51,109 @@ class Parser(private val tokens: List<Token>) {
         }
         throw RuntimeException("Unknown statement")
     }
+
     private fun ifElse(): Statement {
         val condition = expression()
-        val ifStatement = statement()
+        val ifStatement = statementOrBlock()
         val elseStatement: Statement?
         elseStatement = if (match(TokenType.ELSE)) {
-            statement()
+            statementOrBlock()
         } else {
             null
         }
         return IfStatement(condition, ifStatement, elseStatement)
     }
 
-    private fun expression(): Expression {
-        return conditional()
+    private fun whileStatement(): Statement {
+        val condition = expression()
+        val statement = statementOrBlock()
+        return WhileStatement(condition, statement)
     }
-    private  fun conditional():Expression{
-        var result = additive()
+
+    private fun forStatement(): Statement {
+        val initialization = assignmentStatement()
+        consume(TokenType.COMMA)
+        val termination = expression()
+        consume(TokenType.COMMA)
+        val increment = assignmentStatement()
+        val statement = statementOrBlock()
+        return ForStatement(initialization, termination, increment, statement)
+    }
+
+    private fun expression(): Expression {
+        return logicalOr()
+    }
+
+    private fun logicalOr(): Expression {
+        var result = logicalAnd()
         while (true) {
-            if (match(TokenType.EQ)) {
-                result = ConditionalExpression('=', result, additive())
-                continue
-            }
-            if (match(TokenType.LT)) {
-                result = ConditionalExpression('<', result, additive())
-                continue
-            }
-            if (match(TokenType.GT)) {
-                result = ConditionalExpression('>', result, additive())
+            if (match(TokenType.BARBAR)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.OR, result, logicalAnd())
                 continue
             }
             break
         }
         return result
+    }
 
+    private fun logicalAnd(): Expression {
+        var result = equality()
+        while (true) {
+            if (match(TokenType.AMPAMP)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.AND, result, equality())
+                continue
+            }
+            break
+        }
+        return result
+    }
+
+    private fun equality(): Expression {
+        val result = conditional()
+        if (match(TokenType.EQEQ)) {
+            return ConditionalExpression(
+                ConditionalExpression.Operator.EQUALS,
+                result,
+                conditional()
+            )
+        }
+        return if (match(TokenType.EXCLEQ)) {
+            ConditionalExpression(
+                ConditionalExpression.Operator.NOT_EQUALS,
+                result,
+                conditional()
+            )
+        } else result
+    }
+
+    private fun conditional(): Expression {
+        var result = additive()
+        while (true) {
+            if (match(TokenType.LT)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.LT, result, additive())
+                continue
+            }
+            if (match(TokenType.LTEQ)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.LTEQ, result, additive())
+                continue
+            }
+            if (match(TokenType.GT)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.GT, result, additive())
+                continue
+            }
+            if (match(TokenType.GTEQ)) {
+                result =
+                    ConditionalExpression(ConditionalExpression.Operator.GTEQ, result, additive())
+                continue
+            }
+            break
+        }
+        return result
     }
 
     private fun additive(): Expression {
@@ -83,7 +175,7 @@ class Parser(private val tokens: List<Token>) {
     private fun multiplicative(): Expression {
         var result = unary()
         while (true) {
-            // 2 * 6 / 3
+            // 2 * 6 / 3 
             if (match(TokenType.STAR)) {
                 result = BinaryExpression('*', result, unary())
                 continue
@@ -111,12 +203,11 @@ class Parser(private val tokens: List<Token>) {
         if (match(TokenType.NUMBER)) {
             return ValueExpression(current.text!!.toDouble())
         }
-        //Тут может быть проблема
         if (match(TokenType.HEX_NUMBER)) {
-            return ValueExpression(current.text!!.toLong(16).toDouble())
+            return ValueExpression(current.text!!.toDouble())
         }
         if (match(TokenType.WORD)) {
-            return VariabletExpression(current.text!!)
+            return VariableExpression(current.text!!)
         }
         if (match(TokenType.TEXT)) {
             return ValueExpression(current.text)
@@ -149,7 +240,7 @@ class Parser(private val tokens: List<Token>) {
     }
 
     companion object {
-        val EOF = Token(TokenType.EOF, "")
+        private val EOF = Token(TokenType.EOF, "")
     }
 
     init {

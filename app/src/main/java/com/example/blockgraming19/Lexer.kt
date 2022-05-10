@@ -1,6 +1,38 @@
 package com.example.blockgraming19
 
 class Lexer(private val input: String) {
+    companion object {
+        private const val OPERATOR_CHARS = "+-*/(){}=<>!&|,"
+        private val OPERATORS = mutableMapOf<String,TokenType>(
+            "+" to TokenType.PLUS,
+            "-" to TokenType.MINUS,
+            "*" to TokenType.STAR,
+            "/" to TokenType.SLASH,
+            "(" to TokenType.LPAREN,
+            ")" to TokenType.RPAREN,
+            "{" to TokenType.LBRACE,
+            "}" to TokenType.RBRACE,
+            "=" to TokenType.EQ,
+            "<" to TokenType.LT,
+            ">" to TokenType.GT,
+            "!" to TokenType.EXCL,
+            "&" to TokenType.AMP,
+            "|" to TokenType.BAR,
+            "==" to TokenType.EQEQ,
+            "!=" to TokenType.EXCLEQ,
+            "<=" to TokenType.LTEQ,
+            ">=" to TokenType.GTEQ,
+            "&&" to TokenType.AMPAMP,
+            "||" to TokenType.BARBAR,
+            "," to TokenType.COMMA,
+        )
+        private fun isHexNumber(current: Char): Boolean {
+            return "abcdef".indexOf(Character.toLowerCase(current)) != -1
+        }
+
+
+    }
+
     private val length: Int
     private val tokens: MutableList<Token>
     private var pos = 0
@@ -13,7 +45,7 @@ class Lexer(private val input: String) {
             } else if (OPERATOR_CHARS.indexOf(current) != -1) {
                 tokenizeOperator()
             } else {
-                // Белые места
+                // whitespaces
                 next()
             }
         }
@@ -46,9 +78,30 @@ class Lexer(private val input: String) {
     }
 
     private fun tokenizeOperator() {
-        val position = OPERATOR_CHARS.indexOf(peek(0))
-        addToken(OPERATOR_TOKENS[position])
-        next()
+        var current = peek(0)
+        if (current == '/') {
+            if (peek(1) == '/') {
+                next()
+                next()
+                tokenizeComment()
+                return
+            } else if (peek(1) == '*') {
+                next()
+                next()
+                tokenizeMultilineComment()
+                return
+            }
+        }
+        val buffer = StringBuilder()
+        while (true) {
+            val text = buffer.toString()
+            if (!OPERATORS!!.containsKey(text + current) && !text.isEmpty()) {
+                addToken(OPERATORS[text])
+                return
+            }
+            buffer.append(current)
+            current = next()
+        }
     }
 
     private fun tokenizeWord() {
@@ -66,6 +119,8 @@ class Lexer(private val input: String) {
             "print" -> addToken(TokenType.PRINT)
             "if" -> addToken(TokenType.IF)
             "else" -> addToken(TokenType.ELSE)
+            "while" -> addToken(TokenType.WHILE)
+            "for" -> addToken(TokenType.FOR)
             else -> addToken(TokenType.WORD, word)
         }
     }
@@ -105,6 +160,24 @@ class Lexer(private val input: String) {
         addToken(TokenType.TEXT, buffer.toString())
     }
 
+    private fun tokenizeComment() {
+        var current = peek(0)
+        while ("\r\n\u0000".indexOf(current) == -1) {
+            current = next()
+        }
+    }
+
+    private fun tokenizeMultilineComment() {
+        var current = peek(0)
+        while (true) {
+            if (current == '\u0000') throw RuntimeException("Missing close tag")
+            if (current == '*' && peek(1) == '/') break
+            current = next()
+        }
+        next() // *
+        next() // /
+    }
+
     private operator fun next(): Char {
         pos++
         return peek(0)
@@ -115,22 +188,8 @@ class Lexer(private val input: String) {
         return if (position >= length) '\u0000' else input[position]
     }
 
-    private fun addToken(type: TokenType, text: String = "") {
+    private fun addToken(type: TokenType?, text: String = "") {
         tokens.add(Token(type, text))
-    }
-
-    companion object {
-        private const val OPERATOR_CHARS = "+-*/()=<>"
-        private val OPERATOR_TOKENS = arrayOf(
-            TokenType.PLUS, TokenType.MINUS,
-            TokenType.STAR, TokenType.SLASH,
-            TokenType.LPAREN, TokenType.RPAREN,
-            TokenType.EQ,TokenType.LT,TokenType.GT
-        )
-
-        private fun isHexNumber(current: Char): Boolean {
-            return "abcdef".indexOf(Character.toLowerCase(current)) != -1
-        }
     }
 
     init {
