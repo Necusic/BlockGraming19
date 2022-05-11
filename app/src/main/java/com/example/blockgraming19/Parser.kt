@@ -1,5 +1,6 @@
 package com.example.blockgraming19
 
+
 import java.lang.RuntimeException
 
 class Parser(private val tokens: List<Token>) {
@@ -36,6 +37,13 @@ class Parser(private val tokens: List<Token>) {
         if (match(TokenType.WHILE)) {
             return whileStatement()
         }
+
+        if (match(TokenType.BREAK)) {
+            return BreakStatement()
+        }
+        if (match(TokenType.CONTINUE)) {
+            return ContinueStatement()
+        }
         return if (match(TokenType.FOR)) {
             forStatement()
         } else assignmentStatement()
@@ -68,6 +76,13 @@ class Parser(private val tokens: List<Token>) {
         val condition = expression()
         val statement = statementOrBlock()
         return WhileStatement(condition, statement)
+    }
+
+    private fun doWhileStatement(condition: Expression, statement: Statement): Statement {
+        val statement = statementOrBlock()
+        consume(TokenType.WHILE)
+        val condition = expression()
+        return doWhileStatement(condition, statement)
     }
 
     private fun forStatement(): Statement {
@@ -175,7 +190,7 @@ class Parser(private val tokens: List<Token>) {
     private fun multiplicative(): Expression {
         var result = unary()
         while (true) {
-            // 2 * 6 / 3 
+            // 2 * 6 / 3
             if (match(TokenType.STAR)) {
                 result = BinaryExpression('*', result, unary())
                 continue

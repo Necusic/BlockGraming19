@@ -1,6 +1,6 @@
 package com.example.blockgraming19
 
-internal class ForStatement(
+class ForStatement(
     private val initialization: Statement,
     private val termination: Expression,
     private val increment: Statement,
@@ -9,7 +9,13 @@ internal class ForStatement(
     override fun execute() {
         initialization.execute()
         while (termination.eval()!!.asNumber() != 0.0) {
-            statement.execute()
+            try {
+                statement.execute()
+            } catch (bs: BreakStatement) {
+                break
+            } catch (cs: ContinueStatement) {
+                // continue;
+            }
             increment.execute()
         }
     }

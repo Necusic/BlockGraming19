@@ -121,6 +121,9 @@ class Lexer(private val input: String) {
             "else" -> addToken(TokenType.ELSE)
             "while" -> addToken(TokenType.WHILE)
             "for" -> addToken(TokenType.FOR)
+            "do" -> addToken(TokenType.DO)
+            "break" -> addToken(TokenType.BREAK)
+            "continue" -> addToken(TokenType.CONTINUE)
             else -> addToken(TokenType.WORD, word)
         }
     }

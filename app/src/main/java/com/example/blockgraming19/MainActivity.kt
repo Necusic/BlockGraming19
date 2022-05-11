@@ -7,42 +7,40 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.contentValuesOf
+import com.google.android.material.textfield.TextInputEditText
+import kotlin.jvm.JvmStatic
 
 
 class MainActivity : AppCompatActivity() {
-    var rusult:TextView? = null
-    var input:EditText? = null
-    var input1:EditText? = null
-    var resButton:Button? = null
+    var input: TextInputEditText? = null
+    var output: TextView? = null
+    var result: Button? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        var globalString = ""
+        input = findViewById(R.id.input)
+        output = findViewById(R.id.textView)
+        result = findViewById(R.id.result)
 
-        rusult = findViewById(R.id.textView)
-
-        input1 = findViewById(R.id.input1)
-        resButton = findViewById(R.id.Result)
-
-//        resButton?.setOnClickListener {
-//            val num1:String = input1?.text.toString()
-//            val tokens = Lexer(num1).tokenize()
-//            val statements = Parser(tokens).parse()
-//            val a = mutableListOf<String>()
-//            for (i in statements){
-//                i.execute()
-//                a.add(i.toString())
-//
-//            }
-//            rusult?.setText(a.toString())
-//
-//        }
+        val onClickListener = result?.setOnClickListener {
+            val num1: String = input?.text.toString()
+            globalString += "print " + num1 + "\n"
+            val tokens = Lexer(globalString).tokenize()
+            val statements = Parser(tokens).parse()
+            output?.setText(statements.toString())
+        }
 
     }
-
-
-
 }
+
+
+
+
 
 
 

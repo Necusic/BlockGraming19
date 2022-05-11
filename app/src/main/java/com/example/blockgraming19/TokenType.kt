@@ -9,6 +9,9 @@ enum class TokenType {
     ELSE,
     WHILE,
     FOR,
+    DO,
+    BREAK,
+    CONTINUE,
     //Операторы
     PLUS, MINUS, STAR, SLASH, EQ,EQEQ,EXCL,EXCLEQ,
     EOF,LT,LTEQ,GT,GTEQ,
