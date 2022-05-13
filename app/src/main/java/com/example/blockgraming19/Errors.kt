@@ -1,4 +1,8 @@
 package com.example.blockgraming19
 
-class Errors(){
+interface Errors{
+    fun errr(): String {
+        val error = ""
+        return errr()
+    }
 }

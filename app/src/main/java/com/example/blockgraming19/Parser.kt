@@ -1,9 +1,8 @@
 package com.example.blockgraming19
 
-
 import java.lang.RuntimeException
 
-class Parser(private val tokens: List<Token>) {
+internal class Parser(private val tokens: List<Token>) {
     private val size: Int
     private var pos = 0
     fun parse(): Statement {
@@ -37,15 +36,17 @@ class Parser(private val tokens: List<Token>) {
         if (match(TokenType.WHILE)) {
             return whileStatement()
         }
-
         if (match(TokenType.BREAK)) {
             return BreakStatement()
         }
         if (match(TokenType.CONTINUE)) {
             return ContinueStatement()
         }
-        return if (match(TokenType.FOR)) {
-            forStatement()
+        if (match(TokenType.FOR)) {
+            return forStatement()
+        }
+        return if (get(0).type === TokenType.WORD && get(1).type === TokenType.LPAREN) {
+            FunctionStatement(function())
         } else assignmentStatement()
     }
 
@@ -77,14 +78,6 @@ class Parser(private val tokens: List<Token>) {
         val statement = statementOrBlock()
         return WhileStatement(condition, statement)
     }
-
-    private fun doWhileStatement(condition: Expression, statement: Statement): Statement {
-        val statement = statementOrBlock()
-        consume(TokenType.WHILE)
-        val condition = expression()
-        return doWhileStatement(condition, statement)
-    }
-
     private fun forStatement(): Statement {
         val initialization = assignmentStatement()
         consume(TokenType.COMMA)
@@ -93,6 +86,17 @@ class Parser(private val tokens: List<Token>) {
         val increment = assignmentStatement()
         val statement = statementOrBlock()
         return ForStatement(initialization, termination, increment, statement)
+    }
+
+    private fun function(): FunctionalExpression {
+        val name = consume(TokenType.WORD).text
+        consume(TokenType.LPAREN)
+        val function = FunctionalExpression(name!!)
+        while (!match(TokenType.RPAREN)) {
+            function.addArgument(expression())
+            match(TokenType.COMMA)
+        }
+        return function
     }
 
     private fun expression(): Expression {
@@ -220,6 +224,9 @@ class Parser(private val tokens: List<Token>) {
         }
         if (match(TokenType.HEX_NUMBER)) {
             return ValueExpression(current.text!!.toDouble())
+        }
+        if (get(0).type === TokenType.WORD && get(1).type === TokenType.LPAREN) {
+            return function()
         }
         if (match(TokenType.WORD)) {
             return VariableExpression(current.text!!)
