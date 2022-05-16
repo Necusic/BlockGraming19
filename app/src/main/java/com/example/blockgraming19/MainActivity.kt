@@ -8,13 +8,14 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.contentValuesOf
 import com.google.android.material.textfield.TextInputEditText
+import org.w3c.dom.Text
 import kotlin.jvm.JvmStatic
 
 
 class MainActivity : AppCompatActivity() {
-    var input: TextInputEditText? = null
-    var output: TextView? = null
-    var result: Button? = null
+    var input: EditText? = null
+    var print: TextView? = null
+    var res: Button? = null
 
 
 
@@ -24,15 +25,25 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         var globalString = ""
         input = findViewById(R.id.input)
-        output = findViewById(R.id.textView)
-        result = findViewById(R.id.result)
+        print = findViewById(R.id.print)
+        res = findViewById(R.id.res)
 
-        val onClickListener = result?.setOnClickListener {
+        //variable: editText + "\n"
+        //mass: editText + " = [" + editText +"]" "\n"
+        //if: "if " + editText + " {\n" + TextArea + "\n}\n
+        //while: "while(" + editText + "){\n" + TextArea + "\n}\n
+        //for: editText + "," + editText + "," + editText + "{\n" + TextArea + "\n}\n"
+        //def: "def(" + editText + "){\n" + TextArea + "\n}\n
+        //print: "print " + editText + "\n"
+
+        val onClickListener = res?.setOnClickListener {
             val num1: String = input?.text.toString()
-            globalString += "print " + num1 + "\n"
+            //globalString += "print " + num1 + "\n"
+            globalString = num1
             val tokens = Lexer(globalString).tokenize()
-            val statements = Parser(tokens).parse()
-            output?.setText(statements.toString())
+            val statements = Parser(tokens, print as TextView).parse()
+            statements.execute()
+            //print?.setText(statements.toString())
         }
 
     }
