@@ -1,10 +1,11 @@
 package com.example.blockgraming19
 
-
+import android.widget.TextView
 import java.lang.RuntimeException
 import java.util.ArrayList
 
-class Parser(private val tokens: List<Token>) {
+class Parser(private val tokens: List<Token>, private val currentTextView : TextView) {
+    private val textView : TextView
     private val size: Int
     private var pos = 0
     fun parse(): Statement {
@@ -30,7 +31,7 @@ class Parser(private val tokens: List<Token>) {
 
     private fun statement(): Statement {
         if (match(TokenType.PRINT)) {
-            return PrintStatement(expression())
+            return PrintStatement(expression(),textView)
         }
         if (match(TokenType.IF)) {
             return ifElse()
@@ -336,5 +337,6 @@ class Parser(private val tokens: List<Token>) {
 
     init {
         size = tokens.size
+        textView = currentTextView
     }
 }
