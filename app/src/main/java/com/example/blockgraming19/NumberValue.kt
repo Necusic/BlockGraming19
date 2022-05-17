@@ -1,5 +1,7 @@
 package com.example.blockgraming19
 
+import com.example.blockgraming19.NumberValue
+
 class NumberValue : Value {
     private val value: Double
 
@@ -21,5 +23,10 @@ class NumberValue : Value {
 
     override fun toString(): String {
         return asString()!!
+    }
+
+    companion object {
+        @JvmField
+        val ZERO: NumberValue = NumberValue(0.0)
     }
 }

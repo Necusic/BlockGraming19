@@ -1,12 +1,13 @@
 package com.example.blockgraming19
 
-internal class AssignmentStatement(
-    private val variable: String,
-    private val expression: Expression
-) : Statement {
+
+import com.example.blockgraming19.Variables
+
+class AssignmentStatement(private val variable: String, private val expression: Expression) :
+    Statement {
     override fun execute() {
         val result = expression.eval()
-        Variables[variable] = result!!
+        Variables.set(variable, result)
     }
 
     override fun toString(): String {

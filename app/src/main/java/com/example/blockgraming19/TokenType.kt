@@ -12,6 +12,8 @@ enum class TokenType {
     DO,
     BREAK,
     CONTINUE,
+    DEF,
+    RETURN,
     //Операторы
     PLUS, MINUS, STAR, SLASH, EQ,EQEQ,EXCL,EXCLEQ,
     EOF,LT,LTEQ,GT,GTEQ,
@@ -25,6 +27,8 @@ enum class TokenType {
     RPAREN,
     LBRACE,
     RBRACE,
+    LBRACKET,
+    RBRACKET,
     COMMA,
     EQF
 }

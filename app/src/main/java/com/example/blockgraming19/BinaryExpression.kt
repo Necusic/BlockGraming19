@@ -1,5 +1,9 @@
 package com.example.blockgraming19
 
+import com.example.blockgraming19.ArrayValue
+import com.example.blockgraming19.NumberValue
+import java.lang.StringBuilder
+
 class BinaryExpression(
     private val operation: Char,
     private val expr1: Expression,
@@ -8,7 +12,7 @@ class BinaryExpression(
     override fun eval(): Value? {
         val value1 = expr1.eval()
         val value2 = expr2.eval()
-        if (value1 is StringValue) {
+        if (value1 is StringValue || value1 is ArrayValue) {
             val string1 = value1.asString()
             return when (operation) {
                 '*' -> {

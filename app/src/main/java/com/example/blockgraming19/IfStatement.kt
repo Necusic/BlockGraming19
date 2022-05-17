@@ -1,6 +1,9 @@
 package com.example.blockgraming19
 
-internal class IfStatement(
+
+import java.lang.StringBuilder
+
+class IfStatement(
     private val expression: Expression,
     private val ifStatement: Statement,
     private val elseStatement: Statement?

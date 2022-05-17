@@ -1,10 +1,10 @@
 package com.example.blockgraming19
 
-import android.widget.TextView
-import java.lang.RuntimeException
 
-internal class Parser(private val tokens: List<Token>, private val currentTextView : TextView) {
-    private val textView : TextView
+import java.lang.RuntimeException
+import java.util.ArrayList
+
+class Parser(private val tokens: List<Token>) {
     private val size: Int
     private var pos = 0
     fun parse(): Statement {
@@ -25,12 +25,12 @@ internal class Parser(private val tokens: List<Token>, private val currentTextVi
     }
 
     private fun statementOrBlock(): Statement {
-        return if (get(0).type === TokenType.LBRACE) block() else statement()
+        return if (lookMatch(0, TokenType.LBRACE)) block() else statement()
     }
 
     private fun statement(): Statement {
         if (match(TokenType.PRINT)) {
-            return PrintStatement(expression(), textView)
+            return PrintStatement(expression())
         }
         if (match(TokenType.IF)) {
             return ifElse()
@@ -38,27 +38,47 @@ internal class Parser(private val tokens: List<Token>, private val currentTextVi
         if (match(TokenType.WHILE)) {
             return whileStatement()
         }
+        if (match(TokenType.DO)) {
+            return doWhileStatement()
+        }
         if (match(TokenType.BREAK)) {
             return BreakStatement()
         }
         if (match(TokenType.CONTINUE)) {
             return ContinueStatement()
         }
+        if (match(TokenType.RETURN)) {
+            return ReturnStatement(expression())
+        }
         if (match(TokenType.FOR)) {
             return forStatement()
         }
-        return if (get(0).type === TokenType.WORD && get(1).type === TokenType.LPAREN) {
+        if (match(TokenType.DEF)) {
+            return functionDefine()
+        }
+        return if (lookMatch(0, TokenType.WORD) && lookMatch(
+                1,
+                TokenType.LPAREN
+            )
+        ) {
             FunctionStatement(function())
         } else assignmentStatement()
     }
 
     private fun assignmentStatement(): Statement {
         // WORD EQ
-        val current = get(0)
-        if (match(TokenType.WORD) && get(0).type === TokenType.EQ) {
-            val variable = current.text
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.EQ)) {
+            val variable = consume(TokenType.WORD).text
             consume(TokenType.EQ)
             return AssignmentStatement(variable!!, expression())
+        }
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LBRACKET)) {
+            val variable = consume(TokenType.WORD).text
+            consume(TokenType.LBRACKET)
+            val index = expression()
+            consume(TokenType.RBRACKET)
+            consume(TokenType.EQ)
+            return ArrayAssignmentStatement(variable!!, index, expression())
         }
         throw RuntimeException("Unknown statement")
     }
@@ -80,6 +100,14 @@ internal class Parser(private val tokens: List<Token>, private val currentTextVi
         val statement = statementOrBlock()
         return WhileStatement(condition, statement)
     }
+
+    private fun doWhileStatement(): Statement {
+        val statement = statementOrBlock()
+        consume(TokenType.WHILE)
+        val condition = expression()
+        return DoWhileStatement(condition, statement)
+    }
+
     private fun forStatement(): Statement {
         val initialization = assignmentStatement()
         consume(TokenType.COMMA)
@@ -90,15 +118,45 @@ internal class Parser(private val tokens: List<Token>, private val currentTextVi
         return ForStatement(initialization, termination, increment, statement)
     }
 
+    private fun functionDefine(): FunctionDefineStatement {
+        val name = consume(TokenType.WORD).text
+        consume(TokenType.LPAREN)
+        val argNames: MutableList<String?> = ArrayList()
+        while (!match(TokenType.RPAREN)) {
+            argNames.add(consume(TokenType.WORD).text)
+            match(TokenType.COMMA)
+        }
+        val body = statementOrBlock()
+        return FunctionDefineStatement(name!!, argNames, body)
+    }
+
     private fun function(): FunctionalExpression {
         val name = consume(TokenType.WORD).text
         consume(TokenType.LPAREN)
-        val function = FunctionalExpression(name!!)
+        val function = FunctionalExpression(name)
         while (!match(TokenType.RPAREN)) {
             function.addArgument(expression())
             match(TokenType.COMMA)
         }
         return function
+    }
+
+    private fun array(): Expression {
+        consume(TokenType.LBRACKET)
+        val elements: MutableList<Expression> = ArrayList()
+        while (!match(TokenType.RBRACKET)) {
+            elements.add(expression())
+            match(TokenType.COMMA)
+        }
+        return ArrayExpression(elements)
+    }
+
+    private fun element(): Expression {
+        val variable = consume(TokenType.WORD).text
+        consume(TokenType.LBRACKET)
+        val index = expression()
+        consume(TokenType.RBRACKET)
+        return ArrayAccessExpression(variable!!, index)
     }
 
     private fun expression(): Expression {
@@ -196,7 +254,6 @@ internal class Parser(private val tokens: List<Token>, private val currentTextVi
     private fun multiplicative(): Expression {
         var result = unary()
         while (true) {
-            // 2 * 6 / 3
             if (match(TokenType.STAR)) {
                 result = BinaryExpression('*', result, unary())
                 continue
@@ -227,8 +284,14 @@ internal class Parser(private val tokens: List<Token>, private val currentTextVi
         if (match(TokenType.HEX_NUMBER)) {
             return ValueExpression(current.text!!.toDouble())
         }
-        if (get(0).type === TokenType.WORD && get(1).type === TokenType.LPAREN) {
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LPAREN)) {
             return function()
+        }
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LBRACKET)) {
+            return element()
+        }
+        if (lookMatch(0, TokenType.LBRACKET)) {
+            return array()
         }
         if (match(TokenType.WORD)) {
             return VariableExpression(current.text!!)
@@ -258,6 +321,10 @@ internal class Parser(private val tokens: List<Token>, private val currentTextVi
         return true
     }
 
+    private fun lookMatch(pos: Int, type: TokenType): Boolean {
+        return get(pos).type === type
+    }
+
     private operator fun get(relativePosition: Int): Token {
         val position = pos + relativePosition
         return if (position >= size) EOF else tokens[position]
@@ -269,6 +336,5 @@ internal class Parser(private val tokens: List<Token>, private val currentTextVi
 
     init {
         size = tokens.size
-        textView = currentTextView
     }
 }

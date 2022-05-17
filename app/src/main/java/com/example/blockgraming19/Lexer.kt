@@ -1,8 +1,13 @@
 package com.example.blockgraming19
 
+import java.lang.RuntimeException
+import java.lang.StringBuilder
+import java.util.ArrayList
+import java.util.HashMap
+
 class Lexer(private val input: String) {
     companion object {
-        private const val OPERATOR_CHARS = "+-*/(){}=<>!&|,"
+        private const val OPERATOR_CHARS = "+-*/()[]{}=<>!&|,"
         private val OPERATORS = mutableMapOf<String,TokenType>(
             "+" to TokenType.PLUS,
             "-" to TokenType.MINUS,
@@ -10,6 +15,8 @@ class Lexer(private val input: String) {
             "/" to TokenType.SLASH,
             "(" to TokenType.LPAREN,
             ")" to TokenType.RPAREN,
+            "[" to TokenType.LBRACKET,
+            "]" to TokenType.RBRACKET,
             "{" to TokenType.LBRACE,
             "}" to TokenType.RBRACE,
             "=" to TokenType.EQ,
@@ -124,6 +131,8 @@ class Lexer(private val input: String) {
             "do" -> addToken(TokenType.DO)
             "break" -> addToken(TokenType.BREAK)
             "continue" -> addToken(TokenType.CONTINUE)
+            "def" -> addToken(TokenType.DEF)
+            "return" -> addToken(TokenType.RETURN)
             else -> addToken(TokenType.WORD, word)
         }
     }
