@@ -1,57 +1,70 @@
 package com.example.blockgraming19
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
+import com.example.blockgraming19.R
+import android.widget.LinearLayout
 import android.widget.EditText
 import android.widget.TextView
-import androidx.core.content.contentValuesOf
-import com.google.android.material.textfield.TextInputEditText
-import org.w3c.dom.Text
-import kotlin.jvm.JvmStatic
+import java.lang.IndexOutOfBoundsException
+import java.util.ArrayList
 
+internal class MainActivity : Activity() {
+    //Создаем список вьюх которые будут создаваться
+    private var allEds: MutableList<View>? = null
+    //счетчик чисто декоративный для визуального отображения edittext'ov
 
-class MainActivity : AppCompatActivity() {
-    var input: EditText? = null
-    var print: TextView? = null
-    var res: Button? = null
-
-
+    var global = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        var globalString = ""
-        input = findViewById(R.id.input)
-        print = findViewById(R.id.print)
-        res = findViewById(R.id.res)
+        val addButton = findViewById<View>(R.id.button) as Button
+        //инициализировали наш массив с edittext.aьи
+        allEds = ArrayList()
 
-        //variable: editText + "\n"
-        //mass: editText + " = [" + editText +"]" "\n"
-        //if: "if " + editText + " {\n" + TextArea + "\n}\n
-        //while: "while(" + editText + "){\n" + TextArea + "\n}\n
-        //for: editText + "," + editText + "," + editText + "{\n" + TextArea + "\n}\n"
-        //def: "def(" + editText + "){\n" + TextArea + "\n}\n
-        //print: "print " + editText + "\n"
+        //находим наш linear который у нас под кнопкой add edittext в activity_main.xml
+        val linear = findViewById<View>(R.id.linear) as LinearLayout
+        addButton.setOnClickListener {
 
-        val onClickListener = res?.setOnClickListener {
-            val num1: String = input?.text.toString()
-            //globalString += "print " + num1 + "\n"
-            globalString = num1
-            val tokens = Lexer(globalString).tokenize()
-            val statements = Parser(tokens, print as TextView).parse()
-            statements.execute()
-            //print?.setText(statements.toString())
+            //берем наш кастомный лейаут находим через него все наши кнопки и едит тексты, задаем нужные данные
+            val view = layoutInflater.inflate(R.layout.custom_edittext_layout, null)
+            val deleteField = view.findViewById<View>(R.id.button2) as Button
+            deleteField.setOnClickListener {
+                try {
+                    (view.parent as LinearLayout).removeView(view)
+                    (allEds as ArrayList<View>).remove(view)
+                } catch (ex: IndexOutOfBoundsException) {
+                    ex.printStackTrace()
+                }
+            }
+            val text = view.findViewById<View>(R.id.editText) as EditText
+            text.setText("")
+            //добавляем все что создаем в массив
+            (allEds as ArrayList<View>).add(view)
+            //добавляем елементы в linearlayout
+            linear.addView(view)
         }
+        val showDataBtn = findViewById<View>(R.id.button3) as Button
+        showDataBtn.setOnClickListener {
+            //преобразуем наш ArrayList в просто String Array
+            val items = arrayOfNulls<String>((allEds as ArrayList<View>).size)
+            //запускаем чтение всех елементов этого списка и запись в массив
+            for (i in (allEds as ArrayList<View>).indices) {
+                items[i] =
+                    ((allEds as ArrayList<View>).get(i).findViewById<View>(R.id.editText) as EditText).text.toString()
 
+                //ну и можно сразу же здесь вывести
+                val print = findViewById<View>(R.id.tex) as TextView
+                val num = global + ((allEds as ArrayList<View>).get(i).findViewById<View>(R.id.editText) as EditText).text.toString()
+                val tokens = Lexer(num).tokenize()
+                val statements = Parser(tokens, print as TextView).parse()
+                statements.execute()
+            }
+
+        }
     }
 }
-
-
-
-
-
-
-

@@ -8,8 +8,11 @@
         <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.2785" />
         <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1445" />
         <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.2785" />
-        <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/layout/activity_add_buton.xml" value="0.36875" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/layout/activity_main2.xml" value="0.38315217391304346" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/layout/custom_edittext_layout.xml" value="0.3828125" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/layout/customedit.xml" value="0.3828125" />
         <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/layout/fragment_dashboard.xml" value="0.38315217391304346" />
         <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/layout/fragment_home.xml" value="0.38315217391304346" />
         <entry key="..\:/Users/User/AndroidStudioProjects/BlockGraming19/app/src/main/res/layout/fragment_notifications.xml" value="0.38315217391304346" />
