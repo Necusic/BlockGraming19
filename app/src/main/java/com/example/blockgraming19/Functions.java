@@ -30,6 +30,10 @@ public final class Functions {
         functions.put("newarray", args -> {
             return new ArrayValue(args);
         });
+        functions.put("number", (Function) (Value... args) -> {
+            if (args.length != 1) throw new RuntimeException("One arg expected");
+            return new NumberValue((args[0].asNumber()));
+        });
     }
     
     public static boolean isExists(String key) {

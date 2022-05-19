@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BlockGraming19">
         <activity
+            android:name=".SecondActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddButon"
             android:exported="false" />
         <activity
