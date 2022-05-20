@@ -1,6 +1,5 @@
 package com.example.blockgraming19
 
-
 import com.example.blockgraming19.NumberValue
 
 class ConditionalExpression(

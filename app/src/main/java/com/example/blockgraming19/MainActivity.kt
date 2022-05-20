@@ -26,6 +26,7 @@ internal class MainActivity : Activity() {
         allEds = ArrayList()
 
 
+
         val linear = findViewById<View>(R.id.linear) as LinearLayout
         addButton.setOnClickListener {
 
@@ -50,9 +51,6 @@ internal class MainActivity : Activity() {
             val items = arrayOfNulls<String>((allEds as ArrayList<View>).size)
             for (i in (allEds as ArrayList<View>).indices) {
                 items[i] = ((allEds as ArrayList<View>).get(i).findViewById<View>(R.id.input) as EditText).text.toString() + ((allEds as ArrayList<View>).get(i).findViewById<View>(R.id.input1) as EditText).text.toString()
-
-
-
                 Log.e(items.toString(), items.toString(), )
                 val print = findViewById<View>(R.id.tex) as TextView
                 print.setText("")
