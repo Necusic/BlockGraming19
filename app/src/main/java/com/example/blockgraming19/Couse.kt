@@ -12,16 +12,16 @@ class Couse : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_couse)
-        //присвоили кнопку к кнопке на леяуте
+
         val btn = findViewById<View>(R.id.BlockGramming) as Button
         val btn1 = findViewById<View>(R.id.classic) as Button
-        //повесили на него листенера
-        btn.setOnClickListener { //переходим с первой на вторую активность
+
+        btn.setOnClickListener {
             val intent = Intent(this@Couse, MainActivity::class.java)
             startActivity(intent)
         }
-        btn1.setOnClickListener { //переходим с первой на вторую активность
-            val intent = Intent(this@Couse, Classic::class.java)
+        btn1.setOnClickListener {
+            val intent = Intent(this@Couse, DRAGER::class.java)
             startActivity(intent)
         }
     }

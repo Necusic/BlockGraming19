@@ -3,4 +3,11 @@
     <string name="Button_name">result</string>
     <string name="Block_Graming">Block Graming</string>
     <string name="hint">Input</string>
+    <string name="cricketer_list">Cricketer List</string>
+    <string name="add">Add</string>
+    <string name="submit_list">Submit List</string>
+    <string name="todo">TODO</string>
+    <string name="input2">input2</string>
+    <string name="input1">input1</string>
+    <string name="x">X</string>
 </resources>
